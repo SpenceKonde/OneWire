@@ -142,7 +142,7 @@ sample code bearing this copyright.
 #include <Arduino.h>
 #include "OneWire.h"
 #include "util/OneWire_direct_gpio.h"
-
+#include "avr/delay.h"
 
 void OneWire::begin(uint8_t pin)
 {
@@ -174,20 +174,20 @@ uint8_t OneWire::reset(void)
 	// wait until the wire is high... just in case
 	do {
 		if (--retries == 0) return 0;
-		delayMicroseconds(2);
+		_delay_us(2);
 	} while ( !DIRECT_READ(reg, mask));
 
 	noInterrupts();
 	DIRECT_WRITE_LOW(reg, mask);
 	DIRECT_MODE_OUTPUT(reg, mask);	// drive output low
 	interrupts();
-	delayMicroseconds(480);
+	_delay_us(480);
 	noInterrupts();
 	DIRECT_MODE_INPUT(reg, mask);	// allow it to float
-	delayMicroseconds(70);
+	_delay_us(70);
 	r = !DIRECT_READ(reg, mask);
 	interrupts();
-	delayMicroseconds(410);
+	_delay_us(410);
 	return r;
 }
 
@@ -204,18 +204,18 @@ void OneWire::write_bit(uint8_t v)
 		noInterrupts();
 		DIRECT_WRITE_LOW(reg, mask);
 		DIRECT_MODE_OUTPUT(reg, mask);	// drive output low
-		delayMicroseconds(10);
+		_delay_us(10);
 		DIRECT_WRITE_HIGH(reg, mask);	// drive output high
 		interrupts();
-		delayMicroseconds(55);
+		_delay_us(55);
 	} else {
 		noInterrupts();
 		DIRECT_WRITE_LOW(reg, mask);
 		DIRECT_MODE_OUTPUT(reg, mask);	// drive output low
-		delayMicroseconds(65);
+		_delay_us(65);
 		DIRECT_WRITE_HIGH(reg, mask);	// drive output high
 		interrupts();
-		delayMicroseconds(5);
+		_delay_us(5);
 	}
 }
 
@@ -232,12 +232,12 @@ uint8_t OneWire::read_bit(void)
 	noInterrupts();
 	DIRECT_MODE_OUTPUT(reg, mask);
 	DIRECT_WRITE_LOW(reg, mask);
-	delayMicroseconds(3);
+	_delay_us(3);
 	DIRECT_MODE_INPUT(reg, mask);	// let pin float, pull up will raise
-	delayMicroseconds(10);
+	_delay_us(10);
 	r = DIRECT_READ(reg, mask);
 	interrupts();
-	delayMicroseconds(53);
+	_delay_us(53);
 	return r;
 }
 
